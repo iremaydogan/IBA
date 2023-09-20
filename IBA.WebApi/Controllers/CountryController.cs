@@ -5,7 +5,7 @@ namespace IBA.WebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CountryController : Controller
+    public class CountryController : Controller//x
     {     
             private readonly Context _context;
             public CountryController(Context context)
