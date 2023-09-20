@@ -16,7 +16,7 @@ namespace IBA.WebApi.Controllers
             _context = context;
         }
         [HttpPost("PostJanitor")]
-        public IActionResult PostJanitor(JanitorDTO request)
+        public IActionResult PostJanitor(JanitorDTO request)// test
         {
 
             Janitor item = new Janitor();
