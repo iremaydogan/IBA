@@ -42,7 +42,7 @@ namespace IBA.WebApi.Controllers
         [HttpGet]
         public ActionResult GetStudent(int id)
         {
-            var result = _context.Students.Find(id);
+            var result = _context.Students.FirstOrDefault(x=>x.StudentID == id);
             return Ok(result);
         }
         [HttpGet("GetAllStudent")]

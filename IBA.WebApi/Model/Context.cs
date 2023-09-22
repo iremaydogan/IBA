@@ -9,7 +9,7 @@ namespace IBA.WebApi.Model
         public Context()
         {
 
-        }
+        }       
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer("server=213.238.168.103;Database=IremBeyzaDB; User Id=iremBeyzaUser;Password=irem-beyza-06;");
@@ -29,4 +29,4 @@ namespace IBA.WebApi.Model
         public DbSet<Country> Countrys { get; set; }
         public DbSet<Janitor> Janitors { get; set; }
     }
-    }
+}

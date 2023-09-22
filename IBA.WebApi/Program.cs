@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using IBA.WebApi.Controllers;
 using StackExchange.Profiling.Storage;
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,9 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<Context>();
+builder.Services.AddHttpContextAccessor();
+
+
 builder.Services.AddMemoryCache();
 builder.Services.AddMiniProfiler(options =>
 {
@@ -24,13 +29,68 @@ builder.Services.AddMiniProfiler(options =>
     options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
     options.UserIdProvider = (request) => request.HttpContext.User.Identity.Name;
 }).AddEntityFramework();
-
 builder.Services.AddSwaggerGen();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+});
+
+//PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+//        RateLimitPartition.GetConcurrencyLimiter(
+//            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+//            factory: partition => new ConcurrencyLimiterOptions
+//            {
+//                PermitLimit = 1
+//            }));
+
+//PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+//    RateLimitPartition.GetFixedWindowLimiter(
+//        partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+//        factory: partition => new FixedWindowRateLimiterOptions
+//        {
+//            AutoReplenishment = true,
+//            PermitLimit = 4,
+//            QueueLimit = 1,
+//            Window = TimeSpan.FromSeconds(60)
+//        }));
+
+ 
+builder.Services.AddRateLimiter(options =>
+{
+ 
+options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 5,
+                QueueLimit = 2,
+                QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+});
+//builder.Services.AddRateLimiter(options =>
+//{
+//    options.AddFixedWindowLimiter("GetCountry", options =>
+//    {
+//        options.AutoReplenishment = true;
+//        options.PermitLimit = 5;
+//        options.Window = TimeSpan.FromMinutes(1);
+//    });
+
+//    options.AddFixedWindowLimiter("GetAllCountry", options =>
+//    {
+//        options.AutoReplenishment = true;
+//        options.PermitLimit = 6;
+//        options.Window = TimeSpan.FromMinutes(1);
+//    });
+//});
 
 var app = builder.Build();
 
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -38,6 +98,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRateLimiter();
 
 app.UseAuthorization();
 
