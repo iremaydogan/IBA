@@ -18,7 +18,6 @@ namespace IBA.WebApi.Controllers
         [HttpPost("PostJanitor")]
         public IActionResult PostJanitor(JanitorDTO request)
         {
-
             Janitor item = new Janitor();
             item.JanitorName = request.JanitorName;
             item.JanitorSurname = request.JanitorSurname;
@@ -30,7 +29,7 @@ namespace IBA.WebApi.Controllers
         [HttpGet("GetJanitor")]
         public IActionResult GetJanitor(int id)
         {
-            var item = _context.Janitors.Find(id);
+            var item = _context.Janitors.FirstOrDefault(x => x.JanitorID == id);
             return Ok(item);
         }
         [HttpGet("GetAllJanitor")]
@@ -63,12 +62,8 @@ namespace IBA.WebApi.Controllers
                 item.JanitorName = request.JanitorName;
                 item.JanitorSurname = request.JanitorSurname;
                 item.CountryID = request.CountryID;
-
             }
             return Ok();
-
-
-
         }
     }
 }

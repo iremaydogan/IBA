@@ -32,7 +32,7 @@ namespace IBA.WebApi.Controllers
         [HttpGet("GetLesson")]
         public ActionResult GetLesson(int id)
         {
-            var item = _context.Lessons.Find(id);
+            var item = _context.Lessons.FirstOrDefault(x => x.LessonID == id);
             return Ok(item);
         }
         [HttpGet("GetAllLesson")]

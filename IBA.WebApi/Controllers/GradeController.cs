@@ -89,17 +89,15 @@ namespace IBA.WebApi.Controllers
         }
 
         [HttpPut("PutGrade")]
-        public ActionResult PutGrade(GradeDTO request)
+        public ActionResult PutGrade(GradeDTO request, int id)
         {
 
-            var item = _context.Grades.Find(request.GradeID);
+            var item = _context.Grades.Find(id);
             if (item != null)
             {
                 item.StudentID = request.StudentID;
                 item.StudentGrade = request.StudentGrade;
-
-                //item.LessonName = request.LessonName;
-                item.StudentID = request.StudentID;
+                item.LessonID= request.LessonID;
                 _context.SaveChanges();
             }
             _context.SaveChanges();
