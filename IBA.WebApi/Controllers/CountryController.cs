@@ -3,11 +3,14 @@ using IBA.WebApi.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Net.Http;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IBA.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    
+    [Authorize]
+    [Route("api/[controller]/[action]")]
+    
     public class CountryController : Controller//x
     {
         private readonly Context _context;

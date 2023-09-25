@@ -1,10 +1,11 @@
 ﻿using Hangfire;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IBA.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Authorize]
+    [Route("api/[controller]/[action]")]
     public class ProductController : ControllerBase
     {
         [HttpGet]

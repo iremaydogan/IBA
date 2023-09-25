@@ -1,11 +1,12 @@
 ﻿using IBA.WebApi.DTO;
 using IBA.WebApi.Model;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IBA.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Authorize]
+    [Route("api/[controller]/[action]")]
     public class TeacherStudentController : Controller
     {
         private readonly Context _context;
