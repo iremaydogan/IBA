@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.JsonWebTokens;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
+using System.Security.Cryptography;
 
 namespace IBA.WebApi.Controllers
 {
+    [Route("api/[controller]/[action]")]
+    [ApiController]
     public class TokenController : Controller
     {
 
@@ -28,16 +32,13 @@ namespace IBA.WebApi.Controllers
 
         private string GenerateToken()
         {
-            var keyBytes = Encoding.UTF8.GetBytes(_config.GetSection("JwtTokenOptions")["SigningKey"]);
-            var symmetricKey = new SymmetricSecurityKey(keyBytes);
-
-            var signingCredentials = new SigningCredentials(
-                symmetricKey,
-                SecurityAlgorithms.HmacSha256);
+            var rsa = RSA.Create();
+            rsa.ImportRSAPrivateKey(Convert.FromBase64String(_config["JwtTokenOptions:PrivateKey"]), out _);
+            
 
             var claims = new List<Claim>()
     {
-             new Claim("sub", "eunal"),
+             new Claim("sub", "iba"),
              new Claim("name", "irem aydogan")
     };
 
@@ -49,14 +50,19 @@ namespace IBA.WebApi.Controllers
 
             claims.AddRange(roleClaims);
 
-            var token = new JwtSecurityToken(
-                issuer: _config.GetSection("JwtTokenOptions")["Issuer"],
-                audience: _config.GetSection("JwtTokenOptions")["Audience"],
-                claims: claims,
-                expires: DateTime.Now.Add(TimeSpan.FromSeconds(double.Parse(_config.GetSection("JwtTokenOptions")["Expiration"]))),
-                signingCredentials: signingCredentials);
+            var handler = new JsonWebTokenHandler();
+            var now = DateTime.UtcNow;
+            var tokenData = handler.CreateToken(new SecurityTokenDescriptor
+            {
+                Issuer = _config["JwtTokenOptions:Issuer"],
+                Audience = _config["JwtTokenOptions:Audience"],
+                IssuedAt = now,
+                NotBefore = now,
+                Subject = new ClaimsIdentity(claims),
+                Expires = now.AddMinutes(double.Parse(_config["JwtTokenOptions:Expiration"])),
+                SigningCredentials = new SigningCredentials(new RsaSecurityKey(rsa), SecurityAlgorithms.RsaSsaPssSha256)
+            });
 
-            var tokenData = new JwtSecurityTokenHandler().WriteToken(token);
             return tokenData;
         }
     }

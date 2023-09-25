@@ -3,11 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using IBA.WebApi.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Authorization;
 
 namespace IBA.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Authorize]
+    [Route("api/[controller]/[action]")]
     public class JanitorController : Controller
     {
         private readonly Context _context;

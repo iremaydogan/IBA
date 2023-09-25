@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Http;
 using IBA.WebApi.Model;
 using IBA.WebApi.DTO;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+
 namespace IBA.WebApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Authorize]
+    [Route("api/[controller]/[action]")]
 
 
     public class StudentController : ControllerBase
