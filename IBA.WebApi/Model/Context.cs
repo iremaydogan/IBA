@@ -28,5 +28,6 @@ namespace IBA.WebApi.Model
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Country> Countrys { get; set; }
         public DbSet<Janitor> Janitors { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
