@@ -27,7 +27,7 @@ namespace IBA.WebApi.Controllers
         }
 
         [HttpPost("PostToken")]
-        public async Task<IActionResult> PostToken(UserDTO request)
+        public async Task<IActionResult> PostToken(TokenDTO request)
         {
             if (request == null)
             {
@@ -40,7 +40,7 @@ namespace IBA.WebApi.Controllers
             }
             else
             {
-                string token = GenerateToken(item.UserName);
+                string token = GenerateToken(item.UserName,item.UserRole);
                 return Ok(token);
             }
             //if (pwd != "123") return Unauthorized("Şifre geçersiz.");
@@ -48,7 +48,7 @@ namespace IBA.WebApi.Controllers
             //return Ok(token);
         }
 
-        private string GenerateToken(string userName)
+        private string GenerateToken(string userName,string userRole)
         {
             var rsa = RSA.Create();
             rsa.ImportRSAPrivateKey(Convert.FromBase64String(_config["JwtTokenOptions:PrivateKey"]), out _);
@@ -56,14 +56,12 @@ namespace IBA.WebApi.Controllers
 
             var claims = new List<Claim>()
     {
-             new Claim("sub", "iba"),
              new Claim("name", userName)
     };
 
             var roleClaims = new List<Claim>()
     {
-             new Claim("role", "readers"),
-             new Claim("role", "writers"),
+             new Claim("role", userRole)
     };
 
             claims.AddRange(roleClaims);

@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authorization;
+using IBA.WebApi.DTO;
 
 namespace IBA.WebApi.Controllers
 {
     
-    [Authorize]
+    [Authorize(Roles="Admin")]
     [Route("api/[controller]/[action]")]
     
     public class CountryController : Controller//x
@@ -23,8 +24,9 @@ namespace IBA.WebApi.Controllers
         [HttpPost("PostCountry")]
         public IActionResult PostCountry(Country country)
         {
-            _context.Add(country);
-            _context.SaveChanges();
+                          
+                _context.Add(country);
+                _context.SaveChanges();                     
             return Ok(country.CountryID);
         }
         [HttpGet("GetCountry")]

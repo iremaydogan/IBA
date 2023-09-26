@@ -17,7 +17,7 @@ namespace IBA.WebApi.Controllers
         }
         [HttpPost("PostUser")]
         [AllowAnonymous]
-        public IActionResult PostCountry(UserDTO request)
+        public IActionResult PostUser([FromBody] UserDTO request)
         { 
             var kullanici = _context.Users.FirstOrDefault(k => k.UserName == request.UserName);
             if (kullanici == null)
@@ -27,6 +27,7 @@ namespace IBA.WebApi.Controllers
                 item.UserName = request.UserName;
                 item.UserPassword = request.UserPass;
                 item.DateTime = girisTarihi;
+                item.UserRole = request.Role.ToString();
                 _context.Add(item);
                 _context.SaveChanges();
                 return Ok(item.UserId);

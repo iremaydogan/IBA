@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace IBA.WebApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Ogretmen,Admin,Ogrenci")]
     [Route("api/[controller]/[action]")]
     public class TeacherStudentController : Controller
     {
