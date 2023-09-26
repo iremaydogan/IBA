@@ -5,6 +5,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 using System.Security.Cryptography;
+using IBA.WebApi.DTO;
+using IBA.WebApi.Model;
 
 namespace IBA.WebApi.Controllers
 {
@@ -14,32 +16,48 @@ namespace IBA.WebApi.Controllers
     {
 
         //private readonly IConfiguration _config;
+        private readonly Context _context;
 
         private readonly IConfiguration _config;
 
-        public TokenController(IConfiguration config)
+        public TokenController(IConfiguration config, Context context)
         {
             _config = config;
+            _context = context;
         }
 
-        [HttpGet("{pwd}")]
-        public async Task<IActionResult> GetToken(string pwd)
+        [HttpPost("PostToken")]
+        public async Task<IActionResult> PostToken(UserDTO request)
         {
-            if (pwd != "123") return Unauthorized("Şifre geçersiz.");
-            string token = GenerateToken();
-            return Ok(token);
+            if (request == null)
+            {
+                return BadRequest("Kullanıcı Bilgileri Boş Olamaz!");
+            }
+            var item = _context.Users.FirstOrDefault(x => x.UserName == request.UserName && x.UserPassword == request.UserPass);
+            if (item == null)
+            {
+                return BadRequest("Kullanıcı Bulunamadı!");
+            }
+            else
+            {
+                string token = GenerateToken(item.UserName);
+                return Ok(token);
+            }
+            //if (pwd != "123") return Unauthorized("Şifre geçersiz.");
+            //string token = GenerateToken();
+            //return Ok(token);
         }
 
-        private string GenerateToken()
+        private string GenerateToken(string userName)
         {
             var rsa = RSA.Create();
             rsa.ImportRSAPrivateKey(Convert.FromBase64String(_config["JwtTokenOptions:PrivateKey"]), out _);
-            
+
 
             var claims = new List<Claim>()
     {
              new Claim("sub", "iba"),
-             new Claim("name", "irem aydogan")
+             new Claim("name", userName)
     };
 
             var roleClaims = new List<Claim>()
