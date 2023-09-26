@@ -5,7 +5,7 @@ namespace IBA.WebApi.Model
     {
         [Key]
         public int CountryID { get; set; }
-        public string Code { get; set; }
-        public string Name { get; set; }
+        public string? Code { get; set; }
+        public string? Name { get; set; }
     }
 }

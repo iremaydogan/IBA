@@ -7,7 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace IBA.WebApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Ogretmen,Admin")]
+  
     [Route("api/[controller]/[action]")]
     public class TeacherController : Controller
     {
@@ -18,7 +19,7 @@ namespace IBA.WebApi.Controllers
             _context = context;
         }
         [HttpPost("PostTeacher")]
-        public ActionResult PostTeacher(TeacherDTO request)
+        public ActionResult PostTeacher([FromBody] TeacherDTO request)
         {
             if (new EmailAddressAttribute().IsValid(request.TeacherEmail))
             {
@@ -40,13 +41,13 @@ namespace IBA.WebApi.Controllers
         }
 
         [HttpGet("GetTeacher")]
-        public ActionResult GetTeacher(int id)
+        public ActionResult GetTeacher([FromQuery] int id)
         {
-            var teach = _context.Teachers.FirstOrDefault(x=>x.TeacherID == id);
+            var teach = _context.Teachers.FirstOrDefault(x => x.TeacherID == id);
             return Ok(teach);
         }
         [HttpGet("GetAllTeacher")]
-        public ActionResult GetAllTeacher(string? name)
+        public ActionResult GetAllTeacher([FromQuery] string? name)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -62,7 +63,7 @@ namespace IBA.WebApi.Controllers
         }
 
         [HttpDelete("DeleteTeacher")]
-        public ActionResult DeleteTeacher(int id)
+        public ActionResult DeleteTeacher([FromBody] int id)
         {
             var silinecek = _context.Teachers.Find(id);
             _context.Remove(silinecek);
@@ -71,7 +72,7 @@ namespace IBA.WebApi.Controllers
         }
 
         [HttpPut("PutTeacher")]
-        public ActionResult PutTeacher(int id, Teacher teacher)
+        public ActionResult PutTeacher([FromBody] int id, Teacher teacher)
         {
             var guncelle = _context.Teachers.Find(id);
             if (guncelle != null)

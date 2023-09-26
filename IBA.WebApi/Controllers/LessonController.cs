@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace IBA.WebApi.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]/[action]")]
     public class LessonController : Controller
     {

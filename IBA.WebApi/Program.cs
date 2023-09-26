@@ -7,9 +7,12 @@ using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Cryptography;
-
+using IBA.WebApi.DTO;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+
 
 // Add services to the container.
 builder.Services.AddHangfire(x => x.UseSqlServerStorage("Server=213.238.168.103;Database=IremBeyzaDB;User Id=iremBeyzaUser;Password=irem-beyza-06;"));
