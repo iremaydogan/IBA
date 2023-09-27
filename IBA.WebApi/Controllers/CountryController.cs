@@ -5,32 +5,38 @@ using Microsoft.AspNetCore.RateLimiting;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authorization;
 using IBA.WebApi.DTO;
+using Microsoft.Extensions.Caching.Memory;
+using IBA.WebApi.Installers;
 
 namespace IBA.WebApi.Controllers
 {
-    
-    [Authorize(Roles="Admin")]
+
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]/[action]")]
-    
+
     public class CountryController : Controller//x
     {
         private readonly Context _context;
         protected internal IHttpContextAccessor _httpContextAccessor;
-         public CountryController(Context context, IHttpContextAccessor httpContextAccessor)
+        private readonly IMemoryCache _memoryCache;
+        public CountryController(Context context, IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _memoryCache= memoryCache;
         }
         [HttpPost("PostCountry")]
         public IActionResult PostCountry(Country country)
         {
-                          
-                _context.Add(country);
-                _context.SaveChanges();                     
+
+            _context.Add(country);
+            _context.SaveChanges();
             return Ok(country.CountryID);
         }
+
+        [AllowAnonymous]
+        [Cached(100)]
         [HttpGet("GetCountry")]
- 
         public IActionResult GetCountry(int id)
         {
             var y = HttpContext.User.Identity?.Name;
@@ -41,9 +47,9 @@ namespace IBA.WebApi.Controllers
 
         }
 
+        [AllowAnonymous]
+        [Cached(50)]
         [HttpGet("GetAllCountry")]
-        //[EnableRateLimiting("GetAllCountry")]
-
         public IActionResult GetAllCountry(string? name)
         {
             if (string.IsNullOrEmpty(name))
@@ -59,6 +65,7 @@ namespace IBA.WebApi.Controllers
 
 
         }
+
         [HttpDelete("DeleteCountry")]
         public IActionResult DeleteCountry(int id)
         {
@@ -67,6 +74,7 @@ namespace IBA.WebApi.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
         [HttpPut("PutCountry")]
         public IActionResult PutCountry(Country country, int id)
         {
